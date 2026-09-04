@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Neo4j Movie Graph</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Neo4j Movie Graph</h1>
+  <p>Elegí una consulta, completá los parámetros (si tiene) y ejecutala contra el backend.</p>
+
+  <div class="panel">
+    <label for="query-select">Consulta</label>
+    <select id="query-select"></select>
+
+    <p id="query-description"></p>
+
+    <div id="params"></div>
+
+    <button id="run-btn">Ejecutar</button>
+    <span id="status"></span>
+  </div>
+
+  <pre id="result">El resultado va a aparecer acá.</pre>
+
+  <script src="script.js"></script>
+</body>
+</html>

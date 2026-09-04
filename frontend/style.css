@@ -1,0 +1,62 @@
+body {
+  font-family: sans-serif;
+  margin: 2rem;
+  max-width: 800px;
+}
+
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.panel label {
+  font-weight: bold;
+}
+
+#query-description {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #444;
+  font-style: italic;
+}
+
+#params {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#params label {
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+input, select, button {
+  padding: 0.4rem;
+  font-size: 0.95rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+#status {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+pre {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

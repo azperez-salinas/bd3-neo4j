@@ -1,4 +1,5 @@
 services:
+  # Base de datos Neo4j. Los CSV se montan en su carpeta import/ para que LOAD CSV pueda leerlos como file:///csv/...
   neo4j:
     image: neo4j:5-community
     container_name: neo4j-movie-graph-csv-only-db
@@ -16,7 +17,7 @@ services:
       - neo4j_logs:/logs
       - neo4j_import:/var/lib/neo4j/import
       - neo4j_plugins:/plugins
-      - ./data/csv:/var/lib/neo4j/import/csv
+      - ./armadorgrafo/data/csv:/var/lib/neo4j/import/csv
     healthcheck:
       test:
         [
@@ -27,6 +28,44 @@ services:
       timeout: 10s
       retries: 12
       start_period: 30s
+
+  # Servicio de un solo uso: espera a que neo4j esté healthy y arma el grafo si el volumen está vacío (ver armadorgrafo/run-import.sh)
+  armadorgrafo:
+    image: neo4j:5-community
+    container_name: neo4j-movie-graph-armadorgrafo
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    volumes:
+      - ./armadorgrafo:/armadorgrafo
+    entrypoint: ["bash", "/armadorgrafo/run-import.sh"]
+    environment:
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-password123}
+    restart: "no"
+
+  # API Node.js (placeholder mínimo, todavía sin rutas ni conexión real a Neo4j)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    container_name: neo4j-movie-graph-backend
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-password123}
+
+  # Sitio estático HTML/CSS/JS (placeholder mínimo), servido con Nginx
+  frontend:
+    build: ./frontend
+    container_name: neo4j-movie-graph-frontend
+    ports:
+      - "8080:80"
 
 volumes:
   neo4j_data:
