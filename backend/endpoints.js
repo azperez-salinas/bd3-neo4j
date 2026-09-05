@@ -248,5 +248,107 @@ module.exports = function createEndpoints(runQuery) {
     })
   );
 
+
+
+//actores con mayor cantidad de peliculas de un mismo genero
+router.get(
+    "/actors/genre-specialists",
+    route(async (req, res) => {
+      const limit = neo4j.int(req.query.limit || 20);
+      const rows = await runQuery(
+        `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)-[:HAS_GENRE]->(g:Genre)
+        WITH p, g, count(DISTINCT m) AS movieCount
+        WHERE movieCount > 1
+        RETURN p.name AS actor, g.name AS genre, movieCount
+        ORDER BY movieCount DESC
+        LIMIT $limit`,
+        { limit }
+      );
+      res.json(rows);
+    })
+  );
+
+
+
+//actores que mas veces trabajaron con un mismo director
+router.get(
+    "/actors/frequent-director-collaborators",
+    route(async (req, res) => {
+      const limit = neo4j.int(req.query.limit || 20);
+      const rows = await runQuery(
+        `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)<-[:DIRECTED]-(d:Person)
+        WITH p, d, count(DISTINCT m) AS moviesTogether
+        WHERE moviesTogether > 1
+        RETURN p.name AS actor, d.name AS director, moviesTogether
+        ORDER BY moviesTogether DESC
+        LIMIT $limit`,
+        { limit }
+      );
+      res.json(rows);
+    })
+  );
+
+
+//actores con mas minutos grabados
+router.get(
+      "/actors/total-screen-minutes",
+    route(async (req, res) => {
+      const limit = neo4j.int(req.query.limit || 20);
+      const rows = await runQuery(
+        `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)
+        WITH p, collect(DISTINCT m) AS movies
+        WITH p, reduce(total = 0, mv IN movies | total + coalesce(mv.runtime, 0)) AS totalMinutes
+        RETURN p.name AS actor, totalMinutes
+        ORDER BY totalMinutes DESC
+        LIMIT $limit`,
+        { limit }
+      );
+      res.json(rows);
+    })
+  );
+
+
+//actores que mas veces coincidieron en el cast
+router.get(
+      "/actors/frequent-costars",
+    route(async (req, res) => {
+      const limit = neo4j.int(req.query.limit || 20);
+      const rows = await runQuery(
+        `MATCH (p1:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)<-[:APPEARS_IN]-(:Character)<-[:PLAYED]-(p2:Person)
+        WHERE p1.name < p2.name
+        WITH p1, p2, count(DISTINCT m) AS moviesTogether
+        WHERE moviesTogether > 1
+        RETURN p1.name AS actor1, p2.name AS actor2, moviesTogether
+        ORDER BY moviesTogether DESC
+        LIMIT $limit`,
+        { limit }
+      );
+      res.json(rows);
+    })
+  );
+
+
+//compañias con mayor cantidad de series exitosas (puntaje de 7.5 o más) en los ultimos 10 años
+router.get(
+    "/companies/successful-recent-movies",
+    route(async (req, res) => {
+      const minRating = parseFloat(req.query.minRating || 7.5);
+      const years = neo4j.int(req.query.years || 10);
+      const limit = neo4j.int(req.query.limit || 20);
+      const rows = await runQuery(
+        `MATCH (allMovies:Movie)
+        WITH max(allMovies.year) AS maxYear
+        MATCH (co:Company)-[:PRODUCED]->(m:Movie)
+        WHERE m.rating >= $minRating AND m.year >= (maxYear - $years)
+        WITH co, count(DISTINCT m) AS successfulMovies
+        RETURN co.name AS company, successfulMovies
+        ORDER BY successfulMovies DESC
+        LIMIT $limit`,
+        { minRating, years, limit }
+      );
+      res.json(rows);
+    })
+  );
+
   return router;
 };

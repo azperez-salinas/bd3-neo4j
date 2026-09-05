@@ -103,6 +103,45 @@ const QUERIES = [
     path: "/genres/movie-series-overlap",
     params: [],
   },
+  {
+    label: "25. Actores especialistas en un género",
+    description:
+      "Encontrar los actores con mayor cantidad de películas de un mismo género.",
+    path: "/actors/genre-specialists",
+    params: [{ name: "limit", label: "Límite", default: "20" }],
+  },
+  {
+    label: "26. Actores y su director más recurrente",
+    description:
+      "Encontrar los actores que más veces trabajaron con un mismo director.",
+    path: "/actors/frequent-director-collaborators",
+    params: [{ name: "limit", label: "Límite", default: "20" }],
+  },
+  {
+    label: "27. Actores con más minutos grabados",
+    description:
+      "Encontrar los actores con más minutos grabados en películas.",
+    path: "/actors/total-screen-minutes",
+    params: [{ name: "limit", label: "Límite", default: "20" }],
+  },
+  {
+    label: "28. Pares de actores que más coincidieron",
+    description:
+      "Encontrar los actores que más veces coincidieron en el mismo cast de películas.",
+    path: "/actors/frequent-costars",
+    params: [{ name: "limit", label: "Límite", default: "20" }],
+  },
+  {
+    label: "29. Compañías con más películas exitosas recientes",
+    description:
+      "Encontrar las compañías con mayor cantidad de películas exitosas (rating de 7.5 o más) en los últimos 10 años.",
+    path: "/companies/successful-recent-movies",
+    params: [
+      { name: "minRating", label: "Rating mínimo", default: "7.5" },
+      { name: "years", label: "Últimos N años", default: "10" },
+      { name: "limit", label: "Límite", default: "20" },
+    ],
+  },
 ];
 
 const selectEl = document.getElementById("query-select");
