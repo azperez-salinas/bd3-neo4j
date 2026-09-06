@@ -328,7 +328,7 @@ router.get(
   );
 
 
-//compañias con mayor cantidad de series exitosas (puntaje de 7.5 o más) en los ultimos 10 años
+//compañias con mayor cantidad de peliculas exitosas (puntaje de 7.5 o más) en los ultimos 10 años
 router.get(
     "/companies/successful-recent-movies",
     route(async (req, res) => {
