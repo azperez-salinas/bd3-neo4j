@@ -125,11 +125,14 @@ const QUERIES = [
     params: [{ name: "limit", label: "Límite", default: "20" }],
   },
   {
-    label: "28. Pares de actores que más coincidieron",
+    label: "28. Grados de separación entre dos actores",
     description:
-      "Encontrar los actores que más veces coincidieron en el mismo cast de películas.",
-    path: "/actors/frequent-costars",
-    params: [{ name: "limit", label: "Límite", default: "20" }],
+      'Encontrar el camino más corto del grafo entre dos personas a través de personajes y obras en común.',
+    path: "/actors/degrees-of-separation",
+    params: [
+      { name: "from", label: "Desde", default: "Al Pacino" },
+      { name: "to", label: "Hasta", default: "Christian Bale" },
+    ],
   },
   {
     label: "29. Compañías con más películas exitosas recientes",

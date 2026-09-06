@@ -308,24 +308,22 @@ router.get(
   );
 
 
-//actores que mas veces coincidieron en el cast
+//saltos de separacion entre dos actores
 router.get(
-      "/actors/frequent-costars",
-    route(async (req, res) => {
-      const limit = neo4j.int(req.query.limit || 20);
-      const rows = await runQuery(
-        `MATCH (p1:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)<-[:APPEARS_IN]-(:Character)<-[:PLAYED]-(p2:Person)
-        WHERE p1.name < p2.name
-        WITH p1, p2, count(DISTINCT m) AS moviesTogether
-        WHERE moviesTogether > 1
-        RETURN p1.name AS actor1, p2.name AS actor2, moviesTogether
-        ORDER BY moviesTogether DESC
-        LIMIT $limit`,
-        { limit }
-      );
-      res.json(rows);
-    })
-  );
+  "/actors/degrees-of-separation",
+  route(async (req, res) => {
+    const from = req.query.from || "Al Pacino";
+    const to = req.query.to || "Christian Bale";
+    const rows = await runQuery(
+      `MATCH (a:Person {name: $from}), (b:Person {name: $to}),
+             path = shortestPath((a)-[*]-(b))
+       RETURN [n IN nodes(path) | coalesce(n.name, n.title)] AS path,
+              length(path) AS degreesOfSeparation`,
+      { from, to }
+    );
+    res.json(rows[0] || null);
+  })
+);
 
 
 //compañias con mayor cantidad de peliculas exitosas (puntaje de 7.5 o más) en los ultimos 10 años
