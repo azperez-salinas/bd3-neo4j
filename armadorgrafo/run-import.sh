@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Arma el grafo corriendo los .cypher de ./scripts contra Neo4j, pero solo si el volumen todavía está vacío.
-set -euo pipefail
+set -eu
 
 HOST="neo4j"
 PORT="7687"

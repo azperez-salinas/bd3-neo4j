@@ -7,7 +7,8 @@ const BASE_URL = "http://localhost:3000";
 const QUERIES = [
   {
     label: "1. Películas: año, duración y URL",
-    description: "Listar las películas con año de estreno, duración y URL de origen.",
+    description:
+      "Listar las películas con año de estreno, duración y URL de origen.",
     path: "/movies",
     params: [],
   },
@@ -20,13 +21,15 @@ const QUERIES = [
   },
   {
     label: "3. Obras conectadas por género",
-    description: "Contar cuántas películas o series están conectadas a cada género.",
+    description:
+      "Contar cuántas películas o series están conectadas a cada género.",
     path: "/genres/work-counts",
     params: [],
   },
   {
     label: "4. Reparto y personajes de una película",
-    description: 'Mostrar el reparto y los nombres de los personajes de la película "The Matrix".',
+    description:
+      'Mostrar el reparto y los nombres de los personajes de la película "The Matrix".',
     path: "/movies/cast",
     params: [{ name: "title", label: "Película", default: "The Matrix" }],
   },
@@ -41,7 +44,8 @@ const QUERIES = [
   },
   {
     label: "6. Compañías por película/serie",
-    description: "Mostrar las compañías o cadenas conectadas a cada película o serie.",
+    description:
+      "Mostrar las compañías o cadenas conectadas a cada película o serie.",
     path: "/companies/works",
     params: [],
   },
@@ -65,7 +69,8 @@ const QUERIES = [
   },
   {
     label: "10. Actores con más de un personaje",
-    description: "Encontrar actores que hayan interpretado más de un personaje.",
+    description:
+      "Encontrar actores que hayan interpretado más de un personaje.",
     path: "/actors/multi-character",
     params: [],
   },
@@ -77,7 +82,8 @@ const QUERIES = [
   },
   {
     label: "21. Camino más corto entre dos películas",
-    description: 'Encontrar el camino más corto del grafo entre "The Matrix" y "John Wick".',
+    description:
+      'Encontrar el camino más corto del grafo entre "The Matrix" y "John Wick".',
     path: "/movies/shortest-path",
     params: [
       { name: "from", label: "Desde", default: "The Matrix" },
@@ -86,7 +92,8 @@ const QUERIES = [
   },
   {
     label: "22. Actores por grado de coestrellas",
-    description: "Ordenar actores según su grado dentro de la red de coestrellas de películas.",
+    description:
+      "Ordenar actores según su grado dentro de la red de coestrellas de películas.",
     path: "/actors/costar-degree",
     params: [{ name: "limit", label: "Límite", default: "20" }],
   },
@@ -99,7 +106,8 @@ const QUERIES = [
   },
   {
     label: "24. Solapamiento de géneros película/serie",
-    description: "Comparar el solapamiento de géneros entre películas y series.",
+    description:
+      "Comparar el solapamiento de géneros entre películas y series.",
     path: "/genres/movie-series-overlap",
     params: [],
   },
@@ -108,30 +116,30 @@ const QUERIES = [
     description:
       "Encontrar los actores con mayor cantidad de películas de un mismo género.",
     path: "/actors/genre-specialists",
-    params: [{ name: "limit", label: "Límite", default: "20" }],
+    params: [],
   },
   {
     label: "26. Actores y su director más recurrente",
     description:
       "Encontrar los actores que más veces trabajaron con un mismo director.",
     path: "/actors/frequent-director-collaborators",
-    params: [{ name: "limit", label: "Límite", default: "20" }],
+    params: [],
   },
   {
     label: "27. Actores con más minutos grabados",
-    description:
-      "Encontrar los actores con más minutos grabados en películas.",
+    description: "Encontrar los actores con más minutos grabados en películas.",
     path: "/actors/total-screen-minutes",
-    params: [{ name: "limit", label: "Límite", default: "20" }],
+    params: [],
   },
   {
     label: "28. Grados de separación entre dos actores",
     description:
-      'Encontrar el camino más corto del grafo entre dos personas a través de personajes y obras en común.',
+      "Encontrar el camino más corto del grafo entre dos personas a través de personajes y obras en común.",
     path: "/actors/degrees-of-separation",
     params: [
-      { name: "from", label: "Desde", default: "Al Pacino" },
-      { name: "to", label: "Hasta", default: "Christian Bale" },
+      //como esta harcodeado no lo ponemos en parametros
+      //{ name: "from", label: "Desde", default: "Al Pacino" },
+      //{ name: "to", label: "Hasta", default: "Christian Bale" },
     ],
   },
   {
@@ -140,9 +148,10 @@ const QUERIES = [
       "Encontrar las compañías con mayor cantidad de películas exitosas (rating de 7.5 o más) en los últimos 10 años.",
     path: "/companies/successful-recent-movies",
     params: [
-      { name: "minRating", label: "Rating mínimo", default: "7.5" },
-      { name: "years", label: "Últimos N años", default: "10" },
-      { name: "limit", label: "Límite", default: "20" },
+      //como esta harcodeado no lo ponemos en parametros
+      //{ name: "minRating", label: "Rating mínimo", default: "7.5" },
+      //{ name: "years", label: "Últimos N años", default: "10" },
+      //{ name: "limit", label: "Límite", default: "20" },
     ],
   },
 ];
