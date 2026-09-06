@@ -203,6 +203,70 @@ function buildUrl(query) {
   return url.toString();
 }
 
+function formatColumnName(name) {
+  return name
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (character) => character.toUpperCase());
+}
+
+function formatCellValue(value) {
+  if (value === null || value === undefined) {
+    return "-";
+  }
+
+  if (Array.isArray(value)) {
+    return value.join(", ");
+  }
+
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+
+  return String(value);
+}
+
+function renderResults(data) {
+  resultEl.innerHTML = "";
+
+  if (Array.isArray(data) && data.length === 0) {
+    resultEl.textContent = "La consulta no devolvió resultados.";
+    return;
+  }
+
+  const rows = Array.isArray(data) ? data : data === null ? [] : [data];
+  if (rows.length === 0) {
+    resultEl.textContent = "La consulta no devolvió resultados.";
+    return;
+  }
+
+  const columns = [...new Set(rows.flatMap((row) => Object.keys(row)))];
+  const table = document.createElement("table");
+  const header = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+
+  columns.forEach((column) => {
+    const cell = document.createElement("th");
+    cell.scope = "col";
+    cell.textContent = formatColumnName(column);
+    headerRow.appendChild(cell);
+  });
+  header.appendChild(headerRow);
+  table.appendChild(header);
+
+  const body = document.createElement("tbody");
+  rows.forEach((row) => {
+    const tableRow = document.createElement("tr");
+    columns.forEach((column) => {
+      const cell = document.createElement("td");
+      cell.textContent = formatCellValue(row[column]);
+      tableRow.appendChild(cell);
+    });
+    body.appendChild(tableRow);
+  });
+  table.appendChild(body);
+  resultEl.appendChild(table);
+}
+
 async function runSelectedQuery() {
   const query = QUERIES[selectEl.value];
   const url = buildUrl(query);
@@ -216,7 +280,7 @@ async function runSelectedQuery() {
     if (!response.ok) {
       throw new Error(data.error || `HTTP ${response.status}`);
     }
-    resultEl.textContent = JSON.stringify(data, null, 2);
+    renderResults(data);
     statusEl.textContent = `OK (${url})`;
   } catch (err) {
     statusEl.textContent = "Error";
