@@ -254,15 +254,13 @@ module.exports = function createEndpoints(runQuery) {
 router.get(
     "/actors/genre-specialists",
     route(async (req, res) => {
-      const limit = neo4j.int(req.query.limit || 20);
       const rows = await runQuery(
         `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)-[:HAS_GENRE]->(g:Genre)
         WITH p, g, count(DISTINCT m) AS movieCount
         WHERE movieCount > 1
         RETURN p.name AS actor, g.name AS genre, movieCount
         ORDER BY movieCount DESC
-        LIMIT $limit`,
-        { limit }
+        LIMIT 20`
       );
       res.json(rows);
     })
@@ -274,15 +272,13 @@ router.get(
 router.get(
     "/actors/frequent-director-collaborators",
     route(async (req, res) => {
-      const limit = neo4j.int(req.query.limit || 20);
       const rows = await runQuery(
         `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)<-[:DIRECTED]-(d:Person)
         WITH p, d, count(DISTINCT m) AS moviesTogether
         WHERE moviesTogether > 1
         RETURN p.name AS actor, d.name AS director, moviesTogether
         ORDER BY moviesTogether DESC
-        LIMIT $limit`,
-        { limit }
+        LIMIT 20`,
       );
       res.json(rows);
     })
@@ -293,15 +289,13 @@ router.get(
 router.get(
       "/actors/total-screen-minutes",
     route(async (req, res) => {
-      const limit = neo4j.int(req.query.limit || 20);
       const rows = await runQuery(
         `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)
         WITH p, collect(DISTINCT m) AS movies
         WITH p, reduce(total = 0, mv IN movies | total + coalesce(mv.runtime, 0)) AS totalMinutes
         RETURN p.name AS actor, totalMinutes
         ORDER BY totalMinutes DESC
-        LIMIT $limit`,
-        { limit }
+        LIMIT 20`,
       );
       res.json(rows);
     })
@@ -312,14 +306,11 @@ router.get(
 router.get(
   "/actors/degrees-of-separation",
   route(async (req, res) => {
-    const from = req.query.from || "Al Pacino";
-    const to = req.query.to || "Christian Bale";
     const rows = await runQuery(
-      `MATCH (a:Person {name: $from}), (b:Person {name: $to}),
+      `MATCH (a:Person {name: Al Pacino}), (b:Person {name: Christian Bale}),
              path = shortestPath((a)-[*]-(b))
        RETURN [n IN nodes(path) | coalesce(n.name, n.title)] AS path,
               length(path) AS degreesOfSeparation`,
-      { from, to }
     );
     res.json(rows[0] || null);
   })
@@ -330,23 +321,18 @@ router.get(
 router.get(
     "/companies/successful-recent-movies",
     route(async (req, res) => {
-      const minRating = parseFloat(req.query.minRating || 7.5);
-      const years = neo4j.int(req.query.years || 10);
-      const limit = neo4j.int(req.query.limit || 20);
       const rows = await runQuery(
         `MATCH (allMovies:Movie)
         WITH max(allMovies.year) AS maxYear
         MATCH (co:Company)-[:PRODUCED]->(m:Movie)
-        WHERE m.rating >= $minRating AND m.year >= (maxYear - $years)
+        WHERE m.rating >= 7.5 AND m.year >= (maxYear - 10)
         WITH co, count(DISTINCT m) AS successfulMovies
         RETURN co.name AS company, successfulMovies
         ORDER BY successfulMovies DESC
-        LIMIT $limit`,
-        { minRating, years, limit }
+        LIMIT 20`,
       );
       res.json(rows);
     })
   );
-
   return router;
 };
