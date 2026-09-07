@@ -70,7 +70,6 @@ MATCH (e:Episode {id: row.episodeId})
 MATCH (p:Person {id: row.personId})
 MERGE (p)-[:WROTE]->(e);
 
-
 //esta relacion es particular, ya que no se carga desde un CSV como el resto, si no que se calcula a partir de relaciones ya existentes, para conseguir actores que hayan compartido cast de una misma pelicula
 MATCH (p1:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)<-[:APPEARS_IN]-(:Character)<-[:PLAYED]-(p2:Person)
 WHERE p1.name < p2.name
