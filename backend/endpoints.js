@@ -232,17 +232,16 @@ module.exports = function createEndpoints(runQuery) {
     }),
   );
 
-  // 24. Solapamiento de géneros entre películas y series
+  // 19. Nodos del grafo a una distancia máxima de dos saltos desde "The Matrix"
   router.get(
-    "/genres/movie-series-overlap",
+    "/movies/two-hop-neighbors",
     route(async (req, res) => {
+      const title = req.query.title || "The Matrix";
       const rows = await runQuery(
-        `MATCH (m:Movie)-[:HAS_GENRE]->(g:Genre)
-         WITH g, count(DISTINCT m) AS movieCount
-         MATCH (s:Series)-[:HAS_GENRE]->(g)
-         WITH g, movieCount, count(DISTINCT s) AS seriesCount
-         RETURN g.name AS genre, movieCount, seriesCount
-         ORDER BY genre`,
+        `MATCH (a:Movie {title: $title})-[*1..2]-(n)
+         WHERE n <> a
+         RETURN DISTINCT coalesce(n.title, n.name) AS node, labels(n) AS labels`,
+        { title },
       );
       res.json(rows);
     }),

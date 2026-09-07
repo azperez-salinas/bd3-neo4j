@@ -105,11 +105,11 @@ const QUERIES = [
     params: [],
   },
   {
-    label: "24. Solapamiento de géneros película/serie",
+    label: "19. Nodos a dos saltos desde una película",
     description:
-      "Comparar el solapamiento de géneros entre películas y series.",
-    path: "/genres/movie-series-overlap",
-    params: [],
+      'Encontrar nodos del grafo a una distancia máxima de dos saltos desde "The Matrix".',
+    path: "/movies/two-hop-neighbors",
+    params: [{ name: "title", label: "Película", default: "The Matrix" }],
   },
   {
     label: "25. Actores especialistas en un género",
