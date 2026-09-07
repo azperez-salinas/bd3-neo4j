@@ -1,0 +1,3 @@
+# Evita que el propio Dockerfile termine copiado dentro del sitio estático
+Dockerfile
+.dockerignore
