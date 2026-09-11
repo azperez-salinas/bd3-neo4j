@@ -62,7 +62,7 @@ module.exports = function createEndpoints(runQuery) {
       const title = req.query.title || "The Matrix";
       const rows = await runQuery(
         `MATCH (m:Movie {title: $title})<-[:APPEARS_IN]-(c:Character)<-[r:PLAYED]-(p:Person)
-         RETURN p.name AS actor, c.name AS character, r.roleName AS roleName
+         RETURN p.name AS actor, c.name AS character
          ORDER BY actor`,
         { title },
       );
@@ -108,9 +108,9 @@ module.exports = function createEndpoints(runQuery) {
     route(async (req, res) => {
       const limit = neo4j.int(req.query.limit || 10);
       const rows = await runQuery(
-        `MATCH (e:Episode)
+        `MATCH (e:Episode)-[:PART_OF]->(s:Series)
          WHERE e.rating IS NOT NULL
-         RETURN e.title AS title, e.rating AS rating,
+         RETURN e.title AS title, s.title AS series, e.rating AS rating,
                 e.seasonNumber AS seasonNumber, e.episodeNumber AS episodeNumber
          ORDER BY e.rating DESC
          LIMIT $limit`,
@@ -127,7 +127,9 @@ module.exports = function createEndpoints(runQuery) {
       const rows = await runQuery(
         `MATCH (m:Movie)-[:HAS_GENRE]->(g:Genre)
          WHERE m.runtime IS NOT NULL
-         RETURN g.name AS genre, avg(m.runtime) AS avgRuntime, count(m) AS totalMovies
+         WITH g, avg(m.runtime) AS avgRuntime, count(m) AS totalMovies
+         WHERE totalMovies > 1
+         RETURN g.name AS genre, avgRuntime, totalMovies
          ORDER BY avgRuntime DESC`,
       );
       res.json(rows);
@@ -253,11 +255,12 @@ module.exports = function createEndpoints(runQuery) {
     route(async (req, res) => {
       const rows = await runQuery(
         `MATCH (p:Person)-[:PLAYED]->(:Character)-[:APPEARS_IN]->(m:Movie)-[:HAS_GENRE]->(g:Genre)
-        WITH p, g, count(DISTINCT m) AS movieCount
-        WHERE movieCount > 1
-        RETURN p.name AS actor, g.name AS genre, movieCount
-        ORDER BY movieCount DESC
-        LIMIT 20`,
+         WITH p, g, count(DISTINCT m) AS movieCount 
+         WHERE movieCount > 1
+         ORDER BY movieCount DESC
+         WITH g, collect({actor: p.name, movieCount: movieCount})[0] AS top
+         RETURN g.name AS genre, top.actor AS actor, top.movieCount AS movieCount
+         ORDER BY genre`,
       );
       res.json(rows);
     }),
